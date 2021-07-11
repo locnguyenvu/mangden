@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/locnguyenvu/mangden/proto";
+
+message Success {
+    string Status = 1;
+    string Message = 2;
+}
+
+message ConfigDetail {
+    string Name = 1;
+    string Value = 2;
+    string CreatedAt = 3;
+    string UpdatedAt = 4;
+}

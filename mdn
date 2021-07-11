@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+REPOSITORY_NAME="github.com/locnguyenvu/mangden"
+
+function http_api() {
+    if [ ! -f .env ]; then
+        echo Find .env is not found
+        exit
+    fi
+
+    sourcePath="/go/src/${REPOSITORY_NAME}"
+    
+    declare -a dockercommand
+    dockercommand=( 
+        "docker" "run" "-it" "--rm"
+        "-w ${sourcePath}"
+        "-v ${PWD}:${sourcePath}"
+    )
+
+    while getopts "p:d" opti; do
+        case "${opti}" in 
+            p)
+                bindPort="${OPTARG}"
+                ;;
+            d)
+                dockercommand+=( "-p 2345:2345")
+                ;;
+            *)
+                ;;
+        esac
+    done
+
+    envConfCount=$(cat .env | wc -l)
+    line=0
+    while [ $line -lt $envConfCount ]
+    do
+        line=$(( $line+1 ))
+        envVar=$(sed -n ${line}p .env)
+        if [ ! -z $(grep = <<< $envVar) ]; then
+            ekey=$(cut -d= -f1 <<< $envVar)
+            evalue=$(cut -d= -f2 <<< $envVar)
+            if [ "$ekey" = "ADDR" ]; then
+                port=$(cut -d: -f2 <<< $evalue)
+                if [ -z "$bindPort" ]; then
+                    dockercommand+=( "-p ${port}:${port}" )
+                    dockercommand+=( "-e ${ekey}=\"${evalue}\"" )
+                else
+                    dockercommand+=( "-p ${bindPort}:${bindPort}" )
+                    alvalue=${evalue//"$port"/"$bindPort"}
+                    dockercommand+=( "-e ${ekey}=\"${alvalue}\"" )
+                fi
+            else
+                dockercommand+=( "-e ${ekey}=\"${evalue}\"" )
+            fi
+        fi
+    done
+
+    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http_api.air.toml" "-d")
+    eval "${dockercommand[@]}"
+}
+
+function generate_protobuf() {
+    filePath=$1
+
+    protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative $filePath
+}
+
+command=$1
+shift
+if [ -n "$(LC_ALL=C type -t ${command})" ] && [ "$(LC_ALL=C type -t ${command})" = function ]; then 
+    eval "${command} $@"
+else 
+    echo Command not support
+fi

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package home;
+
+option go_package = "github.com/locnguyenvu/mangden/proto/home";
+
+message Index {
+    string Status = 1;
+    string Message = 2;
+}

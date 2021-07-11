@@ -1,0 +1,52 @@
+# Learn golang project
+
+## Setup local environment
+
+### Prerequisites
+1. Google Protobuf 
+    
+    * Binary: https://github.com/protocolbuffers/protobuf
+    * Golang add-ons: https://github.com/protocolbuffers/protobuf-go
+
+2. Docker
+
+3. MySQL server
+
+### Preparation
+
+Create `.env` file like example below
+
+```
+ADDR=0.0.0.0:8081
+
+LOG_LEVEL=debug
+LOG_FORMAT=text
+
+DB_HOST=host.docker.local
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=mangden
+
+```
+
+Instanll dependencies:
+```
+$ go mod vendor
+
+$ go mod tidy
+
+```
+
+### Run development server
+
+```
+$ ./mdn http_api [options]
+
+    -p <port>       Custom http port on runtime
+
+```
+
+## Documents
+
+Development use [cosmtrek/air](https://github.com/cosmtrek/air) for hot-reload, configuration file is `http-api.air.toml`
