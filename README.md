@@ -27,7 +27,6 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=root
 DB_NAME=mangden
-
 ```
 
 Instanll dependencies:
@@ -35,7 +34,6 @@ Instanll dependencies:
 $ go mod vendor
 
 $ go mod tidy
-
 ```
 
 ### Run development server
@@ -44,7 +42,6 @@ $ go mod tidy
 $ ./mdn http_api [options]
 
     -p <port>       Custom http port on runtime
-
 ```
 
 ## Documents
