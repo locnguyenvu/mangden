@@ -55,7 +55,7 @@ function http_api() {
         fi
     done
 
-    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http_api.air.toml" "-d")
+    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http-api.air.toml" "-d")
     eval "${dockercommand[@]}"
 }
 

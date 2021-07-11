@@ -15,6 +15,11 @@ func CreateRouter(deps *app.Dependencies) http.Handler {
 		w.Write([]byte("Mangden project"))
 	})
 
+	r.Get("/error", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Error page", 500)
+		return
+	})
+
 	appConfigRepository := appconfig.NewRepository(deps.GormDB)
 
 	r.Mount("/config", appconfig.NewHandler(
