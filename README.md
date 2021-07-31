@@ -47,3 +47,8 @@ $ ./mdn http_api [options]
 ## Documents
 
 Development use [cosmtrek/air](https://github.com/cosmtrek/air) for hot-reload, configuration file is `http-api.air.toml`
+
+# References
+
+* https://rakyll.org/style-packages/
+* https://blog.golang.org/laws-of-reflection
