@@ -3,13 +3,15 @@ package logger
 import (
 	"time"
 
+	"github.com/locnguyenvu/mangden/pkg/config"
 	"github.com/sirupsen/logrus"
 )
 
-func NewLogger(logFormat, defaultLevel string) *logrus.Logger {
+func New(config *config.Config) *logrus.Logger {
+
 	l := logrus.New()
-	setFormat(l, logFormat)
-	setLevel(l, defaultLevel)
+	setFormat(l, config.LogFormat)
+	setLevel(l, config.LogLevel)
 	return l
 }
 

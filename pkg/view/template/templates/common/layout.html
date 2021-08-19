@@ -1,0 +1,17 @@
+{{ define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>{{template "title" .}} - Mangden</title>
+    </head>
+    <body>
+        <header class="header">
+
+        </header>
+        <main>
+            {{template "content" .}}
+        </main>
+    </body>
+</html>
+{{ end }}

@@ -2,7 +2,7 @@
 
 REPOSITORY_NAME="github.com/locnguyenvu/mangden"
 
-function http_api() {
+function http_server() {
     if [ ! -f .env ]; then
         echo Find .env is not found
         exit
@@ -55,7 +55,7 @@ function http_api() {
         fi
     done
 
-    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http-api.air.toml" "-d")
+    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http-server.air.toml" "-d")
     eval "${dockercommand[@]}"
 }
 
