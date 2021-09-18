@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-
 REPOSITORY_NAME="github.com/locnguyenvu/mangden"
+ENVFILE=${ENVFILE:=.env}
 
-function http_server() {
-    if [ ! -f .env ]; then
-        echo Find .env is not found
-        exit
-    fi
-
+function http-server() {
     sourcePath="/go/src/${REPOSITORY_NAME}"
     
     declare -a dockercommand
@@ -17,41 +12,24 @@ function http_server() {
         "-v ${PWD}:${sourcePath}"
     )
 
-    while getopts "p:d" opti; do
+    while getopts "d" opti; do
         case "${opti}" in 
-            p)
-                bindPort="${OPTARG}"
-                ;;
             d)
-                dockercommand+=( "-p 2345:2345")
+                dockercommand+=( "-p 2345:2345" )
                 ;;
             *)
                 ;;
         esac
     done
 
-    envConfCount=$(cat .env | wc -l)
-    line=0
-    while [ $line -lt $envConfCount ]
+    for env in $(read-env-file);
     do
-        line=$(( $line+1 ))
-        envVar=$(sed -n ${line}p .env)
-        if [ ! -z $(grep = <<< $envVar) ]; then
-            ekey=$(cut -d= -f1 <<< $envVar)
-            evalue=$(cut -d= -f2 <<< $envVar)
-            if [ "$ekey" = "ADDR" ]; then
-                port=$(cut -d: -f2 <<< $evalue)
-                if [ -z "$bindPort" ]; then
-                    dockercommand+=( "-p ${port}:${port}" )
-                    dockercommand+=( "-e ${ekey}=\"${evalue}\"" )
-                else
-                    dockercommand+=( "-p ${bindPort}:${bindPort}" )
-                    alvalue=${evalue//"$port"/"$bindPort"}
-                    dockercommand+=( "-e ${ekey}=\"${alvalue}\"" )
-                fi
-            else
-                dockercommand+=( "-e ${ekey}=\"${evalue}\"" )
-            fi
+        dockercommand+=( "-e ${env}" )
+        ename=$(cut -d= -f1 <<< $env)
+        evalue=${env#*=}
+        if [ "${ename}" = "ADDR" ]; then
+            port=${evalue#*:}
+            dockercommand+=( "-p ${port}:${port}" )
         fi
     done
 
@@ -59,13 +37,39 @@ function http_server() {
     eval "${dockercommand[@]}"
 }
 
-function generate_protobuf() {
+function generate-protobuf() {
     filePath=$1
-
     protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative $filePath
 }
 
+function read-env-file() {
+    declare -a envVar
+    envVar=()
+    while read line;
+    do
+        if [[ ! $line =~ ^[A-Z0-9_]+= ]]; then
+            continue
+        fi
+        ename=$(cut -d= -f1 <<< $line)
+        if [ -v "${ename}" ]; then
+            envVar+=( "${ename}=${!ename}" )
+        else 
+            envVar+=( $line )
+        fi
+    done < ${ENVFILE}
+    echo "${envVar[@]}"
+}
+
+function cli() {
+    envVar=$(read-env-file)
+    eval "${envVar} go run cmd/cli/*.go $@"
+}
+
 command=$1
+if [ ! -f "${ENVFILE}" ]; then
+    echo "Environment file (.env) not found!"
+    exit
+fi
 shift
 if [ -n "$(LC_ALL=C type -t ${command})" ] && [ "$(LC_ALL=C type -t ${command})" = function ]; then 
     eval "${command} $@"
