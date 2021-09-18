@@ -3,35 +3,48 @@ package config
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 )
 
 const (
-	defaultLogLevel  = "info"
-	defaultLogFormat = "json"
-	defaultAddr      = "0.0.0.0:8000"
-	defaultDbPort    = 3306
+	defaultAddr                 = "0.0.0.0:8000"
+	defaultEnvironment          = "local"
+	defaultLogLevel             = "info"
+	defaultLogFormat            = "json"
+	defaultDbPort               = 3306
+	defaultDBMaxIdleConnections = 10
+	defaultDBMaxOpenConnections = 5
+	defaultDBMaxConnLifeTime    = 30 * time.Minute
 )
 
 type Config struct {
-	Addr       string `config:"ADDR"`
-	LogLevel   string `config:"LOG_LEVEL" validate:"oneof=debug info warn error fatal panic"`
-	LogFormat  string `config:"LOG_FORMAT" validate:"oneof=text json"`
-	DbHost     string `config:"DB_HOST"`
-	DbUser     string `config:"DB_USER"`
-	DbPassword string `config:"DB_PASSWORD"`
-	DbPort     int    `config:"DB_PORT"`
-	DbName     string `config:"DB_NAME"`
+	Addr                 string        `config:"ADDR"`
+	Environment          string        `config:"ENVIRONMENT"`
+	LogLevel             string        `config:"LOG_LEVEL" validate:"oneof=debug info warn error fatal panic"`
+	LogFormat            string        `config:"LOG_FORMAT" validate:"oneof=text json"`
+	DbHost               string        `config:"DB_HOST"`
+	DbUser               string        `config:"DB_USER"`
+	DbPassword           string        `config:"DB_PASSWORD"`
+	DbPort               int           `config:"DB_PORT"`
+	DbName               string        `config:"DB_NAME"`
+	DBMaxIdleConnections int           `config:"DB_MAX_IDLE_CONNECTIONS"`
+	DBMaxOpenConnections int           `config:"DB_MAX_OPEN_CONNECTIONS"`
+	DBMaxConnLifetime    time.Duration `config:"DB_MAX_CONN_LIFETIME"`
 }
 
 func New() (*Config, error) {
 	cfg := &Config{
-		Addr:      defaultAddr,
-		LogLevel:  defaultLogLevel,
-		LogFormat: defaultLogFormat,
-		DbPort:    defaultDbPort,
+		Addr:                 defaultAddr,
+		Environment:          defaultEnvironment,
+		LogLevel:             defaultLogLevel,
+		LogFormat:            defaultLogFormat,
+		DbPort:               defaultDbPort,
+		DBMaxIdleConnections: defaultDBMaxIdleConnections,
+		DBMaxOpenConnections: defaultDBMaxOpenConnections,
+		DBMaxConnLifetime:    defaultDBMaxConnLifeTime,
 	}
 
 	ctx := context.Background()

@@ -5,22 +5,19 @@ import (
 	"github.com/locnguyenvu/mangden/pkg/config"
 	"github.com/locnguyenvu/mangden/pkg/database"
 	"github.com/locnguyenvu/mangden/pkg/logger"
-	"github.com/locnguyenvu/mangden/pkg/view/template"
 	"go.uber.org/dig"
 )
 
-func BuildApp() (*WebApp, error) {
+func bootstrap() (*dig.Container, error) {
 	c := dig.New()
 
 	constructors := []interface{}{
 		config.New,
-		database.NewGorm,
 		logger.New,
-		template.NewEngine,
+		database.NewGorm,
 		user.NewRepository,
-		user.NewHttpHandler,
-		NewRouter,
-		NewWebApp,
+
+		NewCommands,
 	}
 
 	for _, constructor := range constructors {
@@ -29,9 +26,5 @@ func BuildApp() (*WebApp, error) {
 		}
 	}
 
-	var webapp *WebApp
-	err := c.Invoke(func(a *WebApp) {
-		webapp = a
-	})
-	return webapp, err
+	return c, nil
 }

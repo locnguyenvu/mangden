@@ -6,19 +6,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository interface {
-	CreateUser(username, password string) (*User, error)
-}
-
-type repository struct {
+type Repository struct {
 	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) Repository {
-	return &repository{db}
+func NewRepository(db *gorm.DB) *Repository {
+	return &Repository{db}
 }
 
-func (r repository) CreateUser(username, password string) (*User, error) {
+func (r *Repository) Create(username, password string) (*User, error) {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

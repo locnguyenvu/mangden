@@ -1,44 +1,20 @@
 package logger
 
 import (
-	"time"
-
 	"github.com/locnguyenvu/mangden/pkg/config"
 	"github.com/sirupsen/logrus"
 )
 
-func New(config *config.Config) *logrus.Logger {
-
+func New(cfg *config.Config) logrus.FieldLogger {
+	var lg logrus.FieldLogger
 	l := logrus.New()
-	setFormat(l, config.LogFormat)
-	setLevel(l, config.LogLevel)
-	return l
-}
-
-func setFormat(l *logrus.Logger, format string) {
-	m := logrus.FieldMap{
-		logrus.FieldKeyTime: "@timestamp",
-		logrus.FieldKeyMsg:  "message",
+	defaultLogLevel, err := logrus.ParseLevel(cfg.LogLevel)
+	if err != nil {
+		l.SetLevel(defaultLogLevel)
 	}
-	switch format {
-	case "json":
-		l.SetFormatter(&logrus.JSONFormatter{
-			FieldMap:        m,
-			TimestampFormat: time.RFC3339Nano,
-		})
-	default:
-		l.SetFormatter(&logrus.TextFormatter{
-			FieldMap:        m,
-			TimestampFormat: time.RFC3339Nano,
-		})
+	if cfg.LogFormat == "json" {
+		l.SetFormatter(&logrus.JSONFormatter{})
 	}
-}
-
-func setLevel(l *logrus.Logger, level string) {
-	switch level {
-	case "debug":
-		l.SetLevel(logrus.DebugLevel)
-	default:
-		l.SetLevel(logrus.InfoLevel)
-	}
+	lg = l
+	return lg
 }

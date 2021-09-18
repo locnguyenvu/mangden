@@ -14,6 +14,15 @@ type HandlerParams struct {
 	UserHandler *user.HttpHandler
 }
 
+type responseWrapper func(w http.ResponseWriter, r *http.Request) error
+
+func (rw responseWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := rw(w, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func NewRouter(p HandlerParams) http.Handler {
 	r := chi.NewRouter()
 

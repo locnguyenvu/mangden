@@ -2,33 +2,36 @@ package database
 
 import (
 	"database/sql"
-	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/locnguyenvu/mangden/pkg/config"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func New(cfg *config.Config) (*sql.DB, error) {
+func NewGorm(cfg *config.Config, applogger logrus.FieldLogger) (*gorm.DB, error) {
 	db, err := sql.Open("mysql", cfg.DbConnectUrl())
-
 	if err != nil {
-		log.Fatal(err)
+		applogger.Error(err)
 		panic(err)
 	}
-	return db, nil
-}
+	db.SetMaxIdleConns(cfg.DBMaxIdleConnections)
+	db.SetMaxOpenConns(cfg.DBMaxOpenConnections)
+	db.SetConnMaxLifetime(cfg.DBMaxConnLifetime)
 
-func NewGorm(dbConn *sql.DB) (*gorm.DB, error) {
-	gormDb, err := gorm.Open(mysql.New(mysql.Config{
-		Conn: dbConn,
-	}), &gorm.Config{})
-
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
+	logConfig := logger.Config{
+		Colorful:                  true,
+		SlowThreshold:             time.Second,
+		IgnoreRecordNotFoundError: false,
+		LogLevel:                  logger.Silent,
 	}
-
-	return gormDb, err
+	gormLogger := logger.New(applogger, logConfig)
+	return gorm.Open(mysql.New(mysql.Config{
+		Conn: db,
+	}), &gorm.Config{
+		Logger: gormLogger,
+	})
 }
