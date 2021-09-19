@@ -21,7 +21,7 @@ func (r Repository) DB() *gorm.DB {
 	return r.db
 }
 
-func (r Repository) CreateNewOrUpdate(dbconfigname, dbconfigvalue string) error {
+func (r Repository) NewOrUpdate(dbconfigname, dbconfigvalue string) error {
 	var erc config
 	result := r.db.Where("name = ?", dbconfigname).First(&erc)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -104,7 +104,7 @@ func (r Repository) Update(dest interface{}, fields []string) error {
 			dbconfigValue = attrValueInterface.(string)
 		}
 
-		uerr := r.CreateNewOrUpdate(dbconfigName, dbconfigValue)
+		uerr := r.NewOrUpdate(dbconfigName, dbconfigValue)
 		if uerr != nil {
 			return uerr
 		}
@@ -112,7 +112,7 @@ func (r Repository) Update(dest interface{}, fields []string) error {
 	return nil
 }
 
-func (r Repository) Find(dbconfigname string) string {
+func (r Repository) Get(dbconfigname string) string {
 	var row config
 	if err := r.db.First(&row, "name = ?", dbconfigname).Error; err != nil {
 		return ""

@@ -10,3 +10,7 @@ type config struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+func Orm() *config {
+	return &config{}
+}
