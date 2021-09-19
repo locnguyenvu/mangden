@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/locnguyenvu/mangden/internal/console"
+	"github.com/locnguyenvu/mangden/internal/user"
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 	"go.uber.org/dig"
@@ -23,7 +25,9 @@ func (ch Router) Commands() []*cli.Command {
 
 type CommandParam struct {
 	dig.In
-	Logger logrus.FieldLogger
+	Logger         logrus.FieldLogger
+	UserRepository *user.Repository
+	Handler        *console.Handler
 }
 
 func NewCommands(p CommandParam) []*cli.Command {
@@ -33,6 +37,11 @@ func NewCommands(p CommandParam) []*cli.Command {
 		p.Logger.Info("Hello, world")
 		return nil
 	})
+
+	router.Register("migrate", p.Handler.Migrate)
+	router.Register("user:create", p.Handler.UserCreate)
+	router.Register("user:info", p.Handler.UserInfo)
+	router.Register("user:update", p.Handler.UserUpdate)
 
 	return router.Commands()
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -26,9 +25,6 @@ func main() {
 			Usage:    "make an explosive entrance",
 			Commands: commands,
 		}
-	})
-	c.Invoke(func(db *gorm.DB) {
-		fmt.Printf("%#v\n", db)
 	})
 	appError := app.Run(os.Args)
 	if appError != nil {

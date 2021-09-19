@@ -3,6 +3,7 @@ package console
 import (
 	"github.com/locnguyenvu/mangden/internal/user"
 	"github.com/sirupsen/logrus"
+	cli "github.com/urfave/cli/v2"
 )
 
 type Handler struct {
@@ -14,9 +15,15 @@ func NewHandler(
 	logger logrus.FieldLogger,
 	userRepository *user.Repository,
 ) *Handler {
-	logger.Info("Hello world")
 	return &Handler{
 		logger,
 		userRepository,
 	}
+}
+
+func (h *Handler) Migrate(ctx *cli.Context) error {
+	userOrm := user.Orm()
+	db := h.userRepository.DB()
+	db.AutoMigrate(userOrm)
+	return nil
 }

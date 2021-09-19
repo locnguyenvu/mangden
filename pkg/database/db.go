@@ -25,7 +25,7 @@ func NewGorm(cfg *config.Config, applogger logrus.FieldLogger) (*gorm.DB, error)
 	logConfig := logger.Config{
 		Colorful:                  true,
 		SlowThreshold:             time.Second,
-		IgnoreRecordNotFoundError: false,
+		IgnoreRecordNotFoundError: true,
 		LogLevel:                  logger.Silent,
 	}
 	gormLogger := logger.New(applogger, logConfig)
