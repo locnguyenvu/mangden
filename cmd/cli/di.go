@@ -1,6 +1,7 @@
 package main
 
 import (
+	appconfig "github.com/locnguyenvu/mangden/internal/config"
 	"github.com/locnguyenvu/mangden/internal/console"
 	"github.com/locnguyenvu/mangden/internal/user"
 	"github.com/locnguyenvu/mangden/pkg/config"
@@ -17,6 +18,7 @@ func bootstrap() (*dig.Container, error) {
 		logger.New,
 		database.NewGorm,
 		user.NewRepository,
+		appconfig.NewRepository,
 
 		console.NewHandler,
 		NewCommands,
