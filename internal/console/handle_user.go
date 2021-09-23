@@ -31,7 +31,7 @@ func (h *Handler) UserUpdate(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	user.Username = "vulocnguyen"
+	user.Username = "vulocnguyen1"
 	return h.userRepository.Update(user)
 
 }

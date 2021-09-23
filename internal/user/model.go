@@ -3,12 +3,12 @@ package user
 import (
 	"time"
 
-	modelhelper "github.com/locnguyenvu/mangden/pkg/database/model"
+	"github.com/locnguyenvu/mangden/pkg/app"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	resource user
+	app.Model
 
 	ID           int64
 	Username     string
@@ -19,15 +19,9 @@ type User struct {
 }
 
 func newUser(orm user) *User {
-	model := &User{
-		resource: orm,
-	}
-	modelhelper.CopyFromOrm(model, &orm)
+	model := new(User)
+	model.SetResource(&orm)
 	return model
-}
-
-func (u *User) Resource() *user {
-	return &u.resource
 }
 
 func (u *User) SetPassword(password string) *User {
