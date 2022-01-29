@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 
@@ -29,7 +30,32 @@ func (r *Repository) Logger() logrus.FieldLogger {
 	return r.logger
 }
 
+func (r *Repository) Save(model Modeler) error {
+	err := r.SyncToOrm(model)
+	if err != nil {
+		return err
+	}
+	result := r.db.Save(model.Resource())
+	if result.Error != nil {
+		r.LoadFromOrm(model, nil)
+	}
+	return result.Error
+}
+
+func (r *Repository) Update(model Modeler) error {
+	resource := model.Resource()
+	err := r.SyncToOrm(model)
+	if err != nil {
+		return err
+	}
+	result := r.db.Save(resource)
+	return result.Error
+}
+
 func (r Repository) LoadFromOrm(model Modeler, orm interface{}) {
+	if orm == nil {
+		orm = model.Resource()
+	}
 	ormRv := reflect.ValueOf(orm).Elem()
 	ormRvType := ormRv.Type()
 	modelRv := reflect.ValueOf(model).Elem()
@@ -38,13 +64,21 @@ func (r Repository) LoadFromOrm(model Modeler, orm interface{}) {
 		fieldName := ormRvType.Field(i).Name
 		modelRv.FieldByName(fieldName).Set(ormRv.FieldByName(fieldName))
 	}
+	if model.Resource() == nil {
+		model.SetResource(orm)
+	}
 }
 
-func (r Repository) SyncToOrm(model Modeler, orm interface{}) {
+func (r Repository) SyncToOrm(model Modeler) error {
+	orm := model.Resource()
+	if orm == nil {
+		return fmt.Errorf("empty model - no resource found")
+	}
 	ormRv := reflect.ValueOf(orm).Elem()
 	ormRvType := ormRv.Type()
 	modelRv := reflect.ValueOf(model).Elem()
 
+	primaryKeyTagSearch, _ := regexp.Compile("primaryKey")
 	for i := 0; i < ormRvType.NumField(); i++ {
 		fieldName := ormRvType.Field(i).Name
 		if fieldName == "ID" || fieldName == "Id" {
@@ -52,20 +86,13 @@ func (r Repository) SyncToOrm(model Modeler, orm interface{}) {
 		}
 		gormTag, ok := ormRvType.Field(i).Tag.Lookup("gorm")
 		if ok {
-			matched, _ := regexp.MatchString("primaryKey", gormTag)
-			if matched {
+			if primaryKeyTagSearch.Match([]byte(gormTag)) {
 				continue
 			}
 		}
 		ormRv.FieldByName(fieldName).Set(modelRv.FieldByName(fieldName))
 	}
-}
-
-func (r *Repository) Update(model Modeler) error {
-	resource := model.Resource()
-	r.SyncToOrm(model, resource)
-	result := r.DB().Save(resource)
-	return result.Error
+	return nil
 }
 
 /**
@@ -100,4 +127,3 @@ func (r Repository) BulkLoadFromOrm(models, orms interface{}) error {
 	reflect.ValueOf(models).Elem().Set(container)
 	return nil
 }
-
