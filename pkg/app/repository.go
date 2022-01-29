@@ -67,3 +67,37 @@ func (r *Repository) Update(model Modeler) error {
 	result := r.DB().Save(resource)
 	return result.Error
 }
+
+/**
+ * Usage r.BulkLoadFromOrm(&[]*app.Model, []interface{})
+ */
+func (r Repository) BulkLoadFromOrm(models, orms interface{}) error {
+	if reflect.TypeOf(models).Kind() != reflect.Ptr {
+		return fmt.Errorf("invalid type")
+	}
+	if reflect.ValueOf(models).Elem().Kind() != reflect.Slice || reflect.TypeOf(orms).Kind() != reflect.Slice {
+		return fmt.Errorf("invalid type")
+	}
+	// modelType = (elem of slice pointer).(elem of slice element)
+	modelType := reflect.TypeOf(models).Elem().Elem()
+	ormType := reflect.TypeOf(orms).Elem()
+
+	loadfn := func(model, orm reflect.Value) {
+		for i := 0; i < ormType.NumField(); i++ {
+			fieldName := ormType.Field(i).Name
+			model.Elem().FieldByName(fieldName).Set(orm.FieldByName(fieldName))
+		}
+		setResourceFn := model.Elem().FieldByName("Model").Addr().MethodByName("SetResource")
+		setResourceFn.Call([]reflect.Value{orm})
+	}
+
+	container := reflect.ValueOf(models).Elem()
+	for i := 0; i < reflect.ValueOf(orms).Len(); i++ {
+		m := reflect.New(modelType.Elem())
+		loadfn(m, reflect.ValueOf(orms).Index(i))
+		container = reflect.Append(container, m)
+	}
+	reflect.ValueOf(models).Elem().Set(container)
+	return nil
+}
+
