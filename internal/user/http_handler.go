@@ -8,11 +8,11 @@ import (
 )
 
 type HttpHandler struct {
-	userRepository Repository
+	userRepository *Repository
 	templateEngine *template.Engine
 }
 
-func NewHttpHandler(userRepository Repository, templateEngine *template.Engine) *HttpHandler {
+func NewHttpHandler(userRepository *Repository, templateEngine *template.Engine) *HttpHandler {
 	return &HttpHandler{userRepository, templateEngine}
 }
 

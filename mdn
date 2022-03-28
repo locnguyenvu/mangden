@@ -2,6 +2,10 @@
 REPOSITORY_NAME="github.com/locnguyenvu/mangden"
 ENVFILE=${ENVFILE:=.env}
 
+function dev-init() {
+    docker build -t "${REPOSITORY_NAME}:local" -f Dockerfile.local .
+}
+
 function http-server() {
     sourcePath="/go/src/${REPOSITORY_NAME}"
     
@@ -33,7 +37,7 @@ function http-server() {
         fi
     done
 
-    dockercommand+=( "cosmtrek/air" "-c ${sourcePath}/http-server.air.toml" "-d")
+    dockercommand+=( "${REPOSITORY_NAME}:local" "-c ${sourcePath}/http-server.air.toml" "-d")
     eval "${dockercommand[@]}"
 }
 

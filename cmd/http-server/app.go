@@ -14,10 +14,10 @@ import (
 type WebApp struct {
 	config *config.Config
 	server *http.Server
-	logger *logrus.Logger
+	logger logrus.FieldLogger
 }
 
-func NewWebApp(config *config.Config, logger *logrus.Logger, handler http.Handler) *WebApp {
+func NewWebApp(config *config.Config, logger logrus.FieldLogger, handler http.Handler) *WebApp {
 	server := &http.Server{
 		Addr:    config.Addr,
 		Handler: handler,

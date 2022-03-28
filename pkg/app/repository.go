@@ -115,7 +115,8 @@ func (r Repository) BulkLoadFromOrm(models, orms interface{}) error {
 			model.Elem().FieldByName(fieldName).Set(orm.FieldByName(fieldName))
 		}
 		setResourceFn := model.Elem().FieldByName("Model").Addr().MethodByName("SetResource")
-		setResourceFn.Call([]reflect.Value{orm})
+		args := []reflect.Value{orm.Addr()}
+		setResourceFn.Call(args)
 	}
 
 	container := reflect.ValueOf(models).Elem()
