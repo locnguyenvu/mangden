@@ -1,5 +1,11 @@
 # Learn golang project
 
+## Create new project with this template
+
+```
+$ curl https://raw.githubusercontent.com/locnguyenvu/mangden/main/setup.sh | sh
+```
+
 ## Setup local environment
 
 ### Prerequisites
