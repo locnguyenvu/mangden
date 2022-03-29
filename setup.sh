@@ -30,13 +30,22 @@ function replace_repository_name() {
     fi
 }
 
+repositoryName=''
+while [ ! "${repositoryName}" ]; do
+    read -p 'Enter repository name: ' repositoryName
+
+    if [ ! "${repositoryName}" ]; then
+        echo -ne "name is missing... "
+    fi
+done
+
 echo "Download source ..."
 curl -s -k -L  https://github.com/locnguyenvu/mangden/tarball/master | tar -xz
 sourceDir=$(ls | grep "locnguyenvu-mangden")
 cp -R ${sourceDir}/* .
+cp ${sourceDir}/.env.example ./.env
 rm -rf ${sourceDir}
 
-read -p 'Enter repository name: ' repositoryName
 echo "Replacing repository name ..."
 go_files=$(find . -iname "*.go")
 for file in ${go_files}; do
@@ -44,4 +53,4 @@ for file in ${go_files}; do
 done
 replace_repository_name $repositoryName ./mdn
 
-mv .env.example .env
+rm -rf ./setup.sh
