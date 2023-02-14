@@ -6,7 +6,7 @@ function dev-init() {
     docker build -t "${REPOSITORY_NAME}:local" -f Dockerfile.local .
 }
 
-function http-server() {
+function hotreload-http-server() {
     sourcePath="/go/src/${REPOSITORY_NAME}"
     
     declare -a dockercommand
@@ -67,6 +67,11 @@ function read-env-file() {
 function cli() {
     envVar=$(read-env-file)
     eval "${envVar} go run cmd/cli/*.go $@"
+}
+
+function http() {
+    envVar=$(read-env-file)
+    eval "${envVar} go run cmd/http-server/*.go $@"
 }
 
 command=$1

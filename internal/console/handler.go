@@ -26,10 +26,10 @@ func NewHandler(
 }
 
 func (h *Handler) Migrate(ctx *cli.Context) error {
-	userOrm := user.Orm()
-	configOrm := appconfig.Orm()
 	db := h.userRepository.DB()
-	db.AutoMigrate(userOrm)
-	db.AutoMigrate(configOrm)
+        err := db.Migrator().AutoMigrate(user.Orm(), appconfig.Orm())
+        if err != nil {
+            h.logger.Error(err)
+        }
 	return nil
 }

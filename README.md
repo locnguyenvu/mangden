@@ -35,9 +35,9 @@ DB_PASSWORD=root
 DB_NAME=mangden
 ```
 
-Instanll dependencies:
+Install dependencies:
 ```
-$ go mod vendor
+$ go mod download 
 
 $ go mod tidy
 ```
@@ -45,9 +45,9 @@ $ go mod tidy
 ### Run development server
 
 ```
-$ ./mdn http_api [options]
+$ ./mdn hotreload-http-server [options]
 
-    -p <port>       Custom http port on runtime
+    -d <port>      Debugger connection port
 ```
 
 ## Documents
