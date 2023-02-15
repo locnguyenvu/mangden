@@ -5,23 +5,37 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+        "time"
 
 	"gorm.io/gorm"
 )
 
-type Repository struct {
+// Map to table `configs`
+type config struct {
+	ID        int64
+	Name      string
+	Value     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func AppConfigOrm() *config {
+    return &config{}
+}
+
+type AppConfig struct {
 	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository {
-	return &Repository{db}
+func NewAppConfig(db *gorm.DB) *AppConfig {
+	return &AppConfig{db}
 }
 
-func (r Repository) DB() *gorm.DB {
+func (r AppConfig) DB() *gorm.DB {
 	return r.db
 }
 
-func (r Repository) NewOrUpdate(dbconfigname, dbconfigvalue string) error {
+func (r AppConfig) NewOrUpdate(dbconfigname, dbconfigvalue string) error {
 	var erc config
 	result := r.db.Where("name = ?", dbconfigname).First(&erc)
 	if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -34,7 +48,7 @@ func (r Repository) NewOrUpdate(dbconfigname, dbconfigvalue string) error {
 	return nil
 }
 
-func (r Repository) Load(v interface{}) error {
+func (r AppConfig) Load(v interface{}) error {
 	var configNames []string
 	var configValues []config
 	rv := reflect.ValueOf(v).Elem()
@@ -77,7 +91,7 @@ func (r Repository) Load(v interface{}) error {
 	return nil
 }
 
-func (r Repository) Update(dest interface{}, fields []string) error {
+func (r AppConfig) Update(dest interface{}, fields []string) error {
 	var dbconfigName, dbconfigValue string
 	rv := reflect.ValueOf(dest).Elem()
 	rvType := rv.Type()
@@ -112,7 +126,7 @@ func (r Repository) Update(dest interface{}, fields []string) error {
 	return nil
 }
 
-func (r Repository) Get(dbconfigname string) string {
+func (r AppConfig) Get(dbconfigname string) string {
 	var row config
 	if err := r.db.First(&row, "name = ?", dbconfigname).Error; err != nil {
 		return ""

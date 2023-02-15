@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/locnguyenvu/mangden/internal/console"
+	"github.com/locnguyenvu/mangden/pkg/config"
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 	"go.uber.org/dig"
@@ -33,6 +34,7 @@ type CommandParam struct {
 	dig.In
 	Logger  logrus.FieldLogger
 	Handler *console.Handler
+    AppConfig *config.AppConfig
 }
 
 func NewCommands(p CommandParam) []*cli.Command {
@@ -43,17 +45,38 @@ func NewCommands(p CommandParam) []*cli.Command {
 		return nil
 	})
 
+    router.Register("test-appconfig", func(ctx *cli.Context) error {
+        aconfig := struct {
+            Hostname    string `dbconfigname:"hostname"`
+        }{}
+        p.AppConfig.Load(&aconfig)
+        p.Logger.Infof("Config value: %s | %T", aconfig.Hostname, aconfig.Hostname)
+        return nil
+    })
+
 	router.Register("migrate", p.Handler.Migrate)
 
 	router.Register("user:create", p.Handler.UserCreate)
 	router.Register("user:info", p.Handler.UserInfo)
 	router.Register("user:update", p.Handler.UserUpdate)
 
-	router.Register("config:set", p.Handler.ConfigSet,
-		&cli.StringFlag{Name: "name", Required: true},
-		&cli.StringFlag{Name: "value", Required: true},
-	)
-	router.Register("config:get", p.Handler.ConfigGet,
+
+    // Config
+    router.Register("config:set",
+        func(ctx *cli.Context) error {
+            name := ctx.String("name")
+            value := ctx.String("value")
+            return p.AppConfig.NewOrUpdate(name, value)
+        }, 
+        &cli.StringFlag{Name: "name", Required: true},
+        &cli.StringFlag{Name: "value", Required: true},
+    )
+	router.Register("config:get",
+        func (ctx *cli.Context) error {
+            name := ctx.String("name")
+            p.Logger.Info(p.AppConfig.Get(name))
+            return nil
+        },
 		&cli.StringFlag{Name: "name", Required: true},
 	)
 
