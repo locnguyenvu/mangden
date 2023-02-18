@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function get-module-name() {
+    moduleName=$(cat ./go.mod | grep '^module' -m 1)
+    awk '{print $NF}' <<< $moduleName
+}
+
+function http-server() {
+    modulename=$(get-module-name)
+    echo $modulename
+    if [ $(docker images $modulename | wc -l ) -eq 1 ]; then
+        echo "Hello world"
+    fi
+}
+
+command=$1
+shift
+if [ -n "$(LC_ALL=C type -t ${command})" ] && [ "$(LC_ALL=C type -t ${command})" = function ]; then 
+    eval "${command} $@"
+else 
+    echo Command not support
+fi
+

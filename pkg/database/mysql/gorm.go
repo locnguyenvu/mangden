@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	gormlogger "gorm.io/gorm/logger"
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 )
@@ -24,7 +24,7 @@ const (
 	defaultDBMaxConnLifeTime = 30 * time.Minute
 )
 
-type EnvConfig struct {
+type Config struct {
 	DbHost string `config:"DB_HOST"`
 	DbUser string `config:"DB_USER"`
 	DbPassword string `config:"DB_PASSWORD"`
@@ -37,12 +37,13 @@ type EnvConfig struct {
     LogLevel string `config:"LOG_LEVEL" validate:"oneof=debug info warn error fatal panic"`
 }
 
-func (c EnvConfig) DbConnectUrl() string {
+func (c Config) DbConnectUrl() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", c.DbUser, c.DbPassword, c.DbHost, c.DbPort, c.DbName)
 }
 
-func loadEnvConfig() *EnvConfig {
-    cfg := &EnvConfig{
+
+func NewGormFromEnv(logger logrus.FieldLogger) (*gorm.DB, error) {
+    cfg := &Config{
         LogLevel:             defaultLogLevel,
         LogFormat:            defaultLogFormat,
         DbPort:               defaultDbPort,
@@ -54,28 +55,26 @@ func loadEnvConfig() *EnvConfig {
     ctx := context.Background()
     loader := confita.NewLoader(env.NewBackend())
     loader.Load(ctx, cfg)
-    return cfg
-}
 
-
-func NewGorm(applogger logrus.FieldLogger) (*gorm.DB, error) {
-    cfg := loadEnvConfig()
 	db, err := sql.Open("mysql", cfg.DbConnectUrl())
 	if err != nil {
-		applogger.Error(err)
-		panic(err)
+        panic(err)
 	}
+    if err = db.Ping(); err != nil {
+        panic(err)
+    }
+    
 	db.SetMaxIdleConns(cfg.DBMaxIdleConnections)
 	db.SetMaxOpenConns(cfg.DBMaxOpenConnections)
 	db.SetConnMaxLifetime(cfg.DBMaxConnLifetime)
 
-	logConfig := logger.Config{
+	logConfig := gormlogger.Config{
 		Colorful:                  true,
 		SlowThreshold:             time.Second,
 		IgnoreRecordNotFoundError: true,
-		LogLevel:                  logger.Silent,
+		LogLevel:                  gormlogger.Silent,
 	}
-	gormLogger := logger.New(applogger, logConfig)
+	gormLogger := gormlogger.New(logger, logConfig)
 	return gorm.Open(mysql.New(mysql.Config{
 		Conn: db,
 	}), &gorm.Config{
