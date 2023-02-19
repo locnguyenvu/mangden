@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option go_package = "pkg/grpc";
+
+package user;
+
+service UserService {
+    rpc Get (GetUserRequest) returns (GetUserResponse) {}
+    rpc List (ListUserRequest) returns (ListUserResponse) {}
+    rpc Create (CreateUserRequest) returns (UserActionResponse) {}
+    rpc Delete (DeleteUserRequest) returns (UserActionResponse) {}
+    rpc Update (UpdateUserRequest) returns (UserActionResponse) {}
+}
+
+message GetUserRequest {
+    int64 id = 1;
+}
+
+message GetUserResponse {
+    int64 id = 1;
+    string userName = 2;
+    string firstName = 3;
+    string lastName = 4;
+    int64 yob = 5;
+}
+
+message ListUserRequest {}
+
+message ListUserResponse {
+    repeated GetUserResponse data = 1;
+}
+
+message CreateUserRequest {
+    string userName = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string password = 4;
+    int64 yob = 5;
+}
+
+message DeleteUserRequest {
+    int64 id = 1;
+}
+
+message UpdateUserRequest {
+    int64 id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    int64 yob = 5;
+}
+
+message UserActionResponse {
+    bool success = 1;
+    string message = 2;
+}

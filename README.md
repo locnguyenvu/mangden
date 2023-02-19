@@ -1,53 +1,93 @@
 # crud-app
 Sample crud app based on golang to check robot framework API testing
 
-
-# Getting start
-
 **Prerequisite**
 1. Golang (version >=1.20)
 2. MySQL (version >=8.0)
+---
+## Migration
 
-Prepare `.env` file
+Set environment variable to run the app
 
-```
-# The web app port
-ADDR=0.0.0.0:8000
-# Database infomation
-DB_HOST=127.0.0.1
-DB_USER=root
-DB_PASSWORD=root
-DB_NAME=fuelt
-DB_PORT=3306
+Database infomation
+```bash
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
 ```
 
-To export `.env` file to environment variable
+**Run database migration**
 
+```bash
+go run cmd/migrate/*.go
 ```
-export $(grep -v '^#' .env | xargs)
+
+## API server 
+
+RESTful API serever via HTTP requests (`GET`, `POST`, `PUT`, `DELETE`)
+
+Set environment variable to run the app
+
+Web server port
+```bash
+export ADDR=0.0.0.0:8000 # Default 8000
+```
+
+Database infomation
+```bash
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
+```
+
+Logger config
+```bash
+export LOG_FORMAT=json LOG_LEVEL=info
 ```
 
 
 **Start server**
 
+```bash
+go run cmd/apiserver/*.go
 ```
-go run cmd/http-server/*.go
+
+Routes
+
+|method|path|body|description|
+|-|-|-|-|
+|`GET`|`/users`||List ten records of newly created users|
+|`POST`|`/users`|```{"userName":"loc_11", "password":"abc123DEF", "firstName":"nguyen", "lastName":"loc", "yob":1992} ```|Create new user|
+|`GET`|`/users/{id}`||Get info of user with id 10|
+|`PUT`|`/users/{id}`|```{"firstName":"nguyen", "lastName":"loc", "yob":1992} ```|Update info of user with id 10|
+|`DELETE`|`/users/{id}`||Delete user with id 10|
+
+
+## GRPC server
+
+Generate code from `user.proto` file
+
+```bash
+protoc --go-grpc_out=module:./ --go_out=module:./ proto/user.proto
 ```
 
-Sample API:
-
+gRPC server port
+```bash
+export ADDR=0.0.0.0:50051 # Default 50051
 ```
-#### Run migration, create table `users` in database
 
-GET /migrate
-
-#### Create new user
-
-POST /users
-Body:
-{ "Username": "McKinsey", "Password": "ABC123def" }
-
-#### List all user
-
-GET /users
+Database infomation
+```bash
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
 ```
+
+**Start server**
+
+```bash
+go run cmd/grpcserver/*.go
+```
+
+gRPC apis
+|methods|description|
+|-|-|
+|`/user.UserService/List`|List ten records of newly created users|
+|`/user.UserService/Get`|Get info of a specific user with provided id|
+|`/user.UserService/Create`|Create new user|
+|`/user.UserService/Delete`|Delete a specific user|
+|`/user.UserService/Update`|Updae info of a specific user with provided id|
