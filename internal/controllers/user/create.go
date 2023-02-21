@@ -3,7 +3,7 @@ package user
 import "net/http"
 
 type CreateUserRequestBody struct {
-    Username string `json:"userName" validate:"required"`
+    Username string `json:"username" validate:"required"`
     Firstname string `json:"firstName" validate:"required"`
     Lastname string `json:"lastName" validate:"required"`
     Password string `json:"password" validate:"required"`

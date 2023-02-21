@@ -11,7 +11,6 @@ import (
 func (r *Renderer) RenderJSON(w http.ResponseWriter, code int, data interface{}) {
 	if !r.AllowedResponseCode(code) {
 		r.logger.WithField("code", code).Errorln("unregistered response code")
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		msg := escapeJSON(fmt.Sprintf("%d is not a registered response code", code))

@@ -39,7 +39,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) Get(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
 	out := new(GetUserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.UserService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetUserRequest, opts ..
 
 func (c *userServiceClient) List(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserResponse, error) {
 	out := new(ListUserResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.UserService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *userServiceClient) List(ctx context.Context, in *ListUserRequest, opts 
 
 func (c *userServiceClient) Create(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserActionResponse, error) {
 	out := new(UserActionResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.UserService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *userServiceClient) Create(ctx context.Context, in *CreateUserRequest, o
 
 func (c *userServiceClient) Delete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*UserActionResponse, error) {
 	out := new(UserActionResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.UserService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *userServiceClient) Delete(ctx context.Context, in *DeleteUserRequest, o
 
 func (c *userServiceClient) Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserActionResponse, error) {
 	out := new(UserActionResponse)
-	err := c.cc.Invoke(ctx, "/user.UserService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.UserService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/Get",
+		FullMethod: "/grpc.UserService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Get(ctx, req.(*GetUserRequest))
@@ -154,7 +154,7 @@ func _UserService_List_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/List",
+		FullMethod: "/grpc.UserService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).List(ctx, req.(*ListUserRequest))
@@ -172,7 +172,7 @@ func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/Create",
+		FullMethod: "/grpc.UserService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Create(ctx, req.(*CreateUserRequest))
@@ -190,7 +190,7 @@ func _UserService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/Delete",
+		FullMethod: "/grpc.UserService/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Delete(ctx, req.(*DeleteUserRequest))
@@ -208,7 +208,7 @@ func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user.UserService/Update",
+		FullMethod: "/grpc.UserService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).Update(ctx, req.(*UpdateUserRequest))
@@ -220,7 +220,7 @@ func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user.UserService",
+	ServiceName: "grpc.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

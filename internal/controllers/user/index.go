@@ -24,7 +24,7 @@ func (c *Controller) HandleIndex() http.Handler {
         for _, elem := range users {
             userlist = append(userlist, ListUserResponseObj{elem.ID, elem.Username, elem.FirstName, elem.LastName, elem.Yob, elem.CreatedAt})
         }
-        c.r.RenderJSON(w, 200, userlist)
+        c.r.RenderJSON(w, 200, map[string]interface{}{"data": userlist})
         return
     })
 }

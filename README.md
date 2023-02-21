@@ -4,6 +4,15 @@ Sample crud app based on golang to check robot framework API testing
 **Prerequisite**
 1. Golang (version >=1.20)
 2. MySQL (version >=8.0)
+
+<details>
+    <summary>Start MySQL local with docker</summary>
+
+```bash
+docker run -dit -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=fuel --name fuel-mysql-db mysql:latest
+```
+</details>
+
 ---
 ## Migration
 
@@ -11,7 +20,7 @@ Set environment variable to run the app
 
 Database infomation
 ```bash
-export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuel DB_PORT=3306 
 ```
 
 **Run database migration**
@@ -33,7 +42,7 @@ export ADDR=0.0.0.0:8000 # Default 8000
 
 Database infomation
 ```bash
-export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuel DB_PORT=3306 
 ```
 
 Logger config
@@ -74,7 +83,7 @@ export ADDR=0.0.0.0:50051 # Default 50051
 
 Database infomation
 ```bash
-export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuelt DB_PORT=3306 
+export DB_HOST=127.0.0.1 DB_USER=root DB_PASSWORD=root DB_NAME=fuel DB_PORT=3306 
 ```
 
 **Start server**
@@ -86,8 +95,8 @@ go run cmd/grpcserver/*.go
 gRPC apis
 |methods|description|
 |-|-|
-|`/user.UserService/List`|List ten records of newly created users|
-|`/user.UserService/Get`|Get info of a specific user with provided id|
-|`/user.UserService/Create`|Create new user|
-|`/user.UserService/Delete`|Delete a specific user|
-|`/user.UserService/Update`|Updae info of a specific user with provided id|
+|`/grpc.UserService/List`|List ten records of newly created users|
+|`/grpc.UserService/Get`|Get info of a specific user with provided id|
+|`/grpc.UserService/Create`|Create new user|
+|`/grpc.UserService/Delete`|Delete a specific user|
+|`/grpc.UserService/Update`|Updae info of a specific user with provided id|

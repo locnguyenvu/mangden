@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option go_package = "pkg/grpc";
 
-package user;
+package grpc;
 
 service UserService {
     rpc Get (GetUserRequest) returns (GetUserResponse) {}

@@ -42,4 +42,3 @@ func (c *Controller) HandleUpdate() http.Handler {
         c.r.RenderJSON(w, 200, nil)
     })
 }
-
