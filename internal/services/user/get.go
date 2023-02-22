@@ -5,7 +5,7 @@ import (
     "context"
     "errors"
 
-    pb "mck.co/fuel/pkg/grpc"
+    pb "github.com/locnguyenvu/mdn/pkg/grpc"
 )
 
 func (ss *ServiceServer) Get(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {

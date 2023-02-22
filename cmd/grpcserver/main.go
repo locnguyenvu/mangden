@@ -10,10 +10,10 @@ import (
     "go.uber.org/dig"
 	"google.golang.org/grpc"
 
-    "mck.co/fuel/internal/services/user"
-    "mck.co/fuel/pkg/database/mysql"
-    "mck.co/fuel/pkg/logging"
-    pb "mck.co/fuel/pkg/grpc"
+    "github.com/locnguyenvu/mdn/internal/services/user"
+    "github.com/locnguyenvu/mdn/pkg/database/mysql"
+    "github.com/locnguyenvu/mdn/pkg/logging"
+    pb "github.com/locnguyenvu/mdn/pkg/grpc"
 )
 
 var (

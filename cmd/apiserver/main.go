@@ -11,9 +11,9 @@ import (
 
     "github.com/sirupsen/logrus"
     "go.uber.org/dig"
-    "mck.co/fuel/pkg/database/mysql"
-    "mck.co/fuel/pkg/logging"
-    "mck.co/fuel/internal/routes"
+    "github.com/locnguyenvu/mdn/pkg/database/mysql"
+    "github.com/locnguyenvu/mdn/pkg/logging"
+    "github.com/locnguyenvu/mdn/internal/routes"
 )
 
 var (

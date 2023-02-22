@@ -4,7 +4,7 @@ import (
     "context"
     "errors"
 
-    pb "mck.co/fuel/pkg/grpc"
+    pb "github.com/locnguyenvu/mdn/pkg/grpc"
 )
 
 func (ss *ServiceServer) Delete(ctx context.Context, in *pb.DeleteUserRequest) (*pb.UserActionResponse, error) {

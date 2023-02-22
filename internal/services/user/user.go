@@ -3,8 +3,8 @@ package user
 import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"mck.co/fuel/internal/user"
-	pb "mck.co/fuel/pkg/grpc"
+	"github.com/locnguyenvu/mdn/internal/user"
+	pb "github.com/locnguyenvu/mdn/pkg/grpc"
 )
 
 

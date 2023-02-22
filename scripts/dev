@@ -1,0 +1,105 @@
+#!/usr/bin/env bash 
+
+set -e
+
+PROGRAM=$(basename $0)
+ROOT=$(cd $(dirname $0)'/..' 2&> /dev/null | pwd -P)
+
+function module-name() {
+    name=$(cat $ROOT"/go.mod" | grep -m1 '^module' | awk '{ print $NF }')
+    echo $name
+}
+
+function get-port() {
+    if [[ ! "$1" =~ [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{3,5} ]]; then
+        echo "err: invalid address"
+        exit 1
+    fi
+    port=$(echo $@ | awk -F: '{ print $NF }')
+    echo $port
+}
+
+function _initdev() {
+    dockerImage=$(module-name)':dev'
+    if [ $(docker image ls $dockerImage -q | wc -l) -eq 0 ]; then
+        echo 'build docker image for dev ...'
+        docker build -t $dockerImage "${ROOT}/scripts/air"
+    fi
+}
+
+function hapiserver() {
+    envFile='.env'
+    debug=0
+    dockerImage=$(module-name)':apiserver'
+
+    args=`getopt de: $*`
+    set -- $args
+    while :; do
+        case "$1" in
+        -e)
+            envFile=$2
+            shift; shift
+            ;;
+        -d)
+            debug=1
+            shift
+            ;;
+        --)
+            shift; break
+            ;;
+        esac
+    done
+
+    if [ ! -f $envFile ]; then
+        echo "err: $envFile file not found"
+        exit 1
+    fi
+
+    serverAddress=$((grep -m 1 "ADDR" $envFile || echo "ADDR=0.0.0.0:8000") | awk -F= '{ print $NF }')
+    serverPort=$(get-port $serverAddress)
+    dockerImage=$(module-name)':dev'
+
+    RUNCMD=( 
+        "docker" "run" "--rm" "-it" 
+        "-p" "${serverPort}:${serverPort}" 
+        "-w" "/go/src/"$(module-name) 
+        "-v" "${ROOT}:/go/src/$(module-name)"
+        "--env-file" $envFile
+    )
+    if [ $debug -eq 1 ]; then
+        RUNCMD+=( "-p" "2345:2345" )
+    fi
+    RUNCMD+=(
+        $dockerImage 
+        "-c" "/go/src/"$(module-name)"/scripts/air/apiserver.toml"
+        "-d"
+    )
+    _initdev
+    eval ${RUNCMD[@]}
+}
+
+function help() {
+    echo "Usage: ${PROGRAM} <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  hapiserver      Start apiserver with hotreload container"
+    echo "                  Options:"
+    echo "                      -d              start debug server at port 2345"
+    echo "                      -e <env-file>   path to environment file, default is \`.env\`"
+}
+
+SUBCOMMAND="${1:-}"
+EXCCMD=( "$@" )
+case "$SUBCOMMAND" in
+    "" | "help" | "-h" | "--help")
+        help
+        ;;
+    "hapiserver")
+        hapiserver "${EXCCMD[@]//$SUBCOMMAND/}"
+        ;;
+    *)
+      help
+      exit 1
+      ;;
+esac
+

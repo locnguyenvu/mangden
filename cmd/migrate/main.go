@@ -7,9 +7,9 @@ import (
 	"go.uber.org/dig"
 	"gorm.io/gorm"
 
-	"mck.co/fuel/internal/user"
-	"mck.co/fuel/pkg/database/mysql"
-	"mck.co/fuel/pkg/logging"
+	"github.com/locnguyenvu/mdn/internal/user"
+	"github.com/locnguyenvu/mdn/pkg/database/mysql"
+	"github.com/locnguyenvu/mdn/pkg/logging"
 )
 
 

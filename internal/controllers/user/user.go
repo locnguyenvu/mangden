@@ -9,8 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"mck.co/fuel/internal/user"
-	"mck.co/fuel/pkg/render"
+	"github.com/locnguyenvu/mdn/internal/user"
+	"github.com/locnguyenvu/mdn/pkg/render"
 )
 
 var validate = validator.New()

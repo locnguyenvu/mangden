@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"mck.co/fuel/internal/controllers/user"
+	"github.com/locnguyenvu/mdn/internal/controllers/user"
 )
 
 func APIServer(

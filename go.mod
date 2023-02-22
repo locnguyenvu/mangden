@@ -1,4 +1,4 @@
-module mck.co/fuel
+module github.com/locnguyenvu/mdn
 
 go 1.20
 

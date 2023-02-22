@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -e
+
+PROGRAM=$(basename $0)
+ROOT=$(cd $(dirname $0)'/..' 2&> /dev/null | pwd -P)
+
+function module-name() {
+    name=$(cat $ROOT"/go.mod" | grep -m1 '^module' | awk '{ print $NF }')
+    echo $name
+}
+
+function _os() {
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        Linux*)     machine=Linux;;
+        Darwin*)    machine=Mac;;
+        CYGWIN*)    machine=Cygwin;;
+        MINGW*)     machine=MinGw;;
+        *)          machine="UNKNOWN:${unameOut}"
+    esac
+    echo ${machine}
+}
+
+currentModuleName=$(module-name)
+read -p "Enter module name: " moduleName
+
+grep -r -n $currentModuleName . | \
+    while read line;
+    do
+        fileName=$(cut -d : -f 1 <<< $line)
+        matchedLine=$(cut -d : -f 2 <<< $line)
+        echo $fileName
+        os=$(_os)
+        if [ "$os" == "Mac" ]; then
+            sed -i '' $matchedLine"s#"$currentModuleName"#"$moduleName"#" $fileName
+        elif [ "$os" == "Linux" ]; then
+            sed -i $matchedLine"s#"$currentModuleName"#"$moduleName"#g" $fileName
+        fi
+    done;
